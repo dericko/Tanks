@@ -27,10 +27,9 @@ public class Game implements Runnable {
     final JPanel status_panel = new JPanel();
     final JLabel playerStatus = new JLabel("Get Ready!");
     final JLabel timer = new JLabel("");
-    final JSlider powerbar = new JSlider(0, 20, 0);
 
 		// Main playing area
-		field = new GameField(playerStatus, timer, powerbar);
+		field = new GameField(playerStatus, timer);
 		frame.add(field, BorderLayout.CENTER);
 		
 		// Add frame and status panel functionality
@@ -40,14 +39,6 @@ public class Game implements Runnable {
     status_panel.setLayout(new FlowLayout());
     status_panel.add(timer);
     status_panel.add(playerStatus);
-		
-		powerbar.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        
-      }
-		  
-		});
-    status_panel.add(powerbar);
 		
 		// Control Panel
 		final JPanel control_panel = new JPanel();
@@ -70,6 +61,15 @@ public class Game implements Runnable {
 		  }
 		});
 		control_panel.add(quit);
+		
+		// Next Turn
+		final JButton nextTurn = new JButton("Next Turn");
+    nextTurn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        field.nextTurn();
+      }
+    });
+    control_panel.add(nextTurn);
 		
 
 		// Put the frame on the screen

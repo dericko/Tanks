@@ -2,26 +2,22 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.EventListener;
 
 
-/** A Bomb sprite is created by a tank. It contains a listener to see if it 
- *  intersects another sprite
- */
+/** A Bomb sprite is created by a tank.  */
+
 public class Bomb extends Sprite {
   
-  public int damage = 250;
+  public int damage = (int) (Math.random() * 25) + 10;
   public int bombRadius = 5;
   public int damageRadius = 20;
-  private static final int WIDTH = 10;
-  private static final int HEIGHT = 10;
+  private static final int WIDTH = 7;
+  private static final int HEIGHT = 7;
   
   /** Constructor */
   public Bomb(int vx, int vy, int px, int py, 
-      int maxX, int maxY, Tank shooter) {
+      int maxX, int maxY) {
     super(vx, vy, px, py, WIDTH, HEIGHT, maxX, maxY);
-    
-    shooter.hasShot = true;
   }
   
   @Override

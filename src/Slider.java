@@ -1,3 +1,4 @@
+
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -19,7 +20,7 @@ public class Slider extends Sprite {
   public Slider(int power, int maxX, int maxY) {
     super(VX, VY, posX, posY, maxX, 30, maxX, maxY);
     this.power = power;
-    sliderSpeed = maxX / 20;
+    sliderSpeed = maxX / 30;
   }
   
   @Override

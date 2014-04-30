@@ -1,5 +1,6 @@
 
 
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionListener;
@@ -14,19 +15,20 @@ import javax.imageio.ImageIO;
  * 
  *
  */
-public abstract class Tank extends Sprite {
+public class Tank extends Sprite {
   // Tank-specific variables
   public boolean isAlive = true;
   public int life;
   public boolean hasShot;
   public boolean isTurn;
-  public int aim;
-  public int aimFaceX;
-  public int aimOrigin;
+  
   public int aimAngle;
   public int power;
   public Color color;
   public boolean faceRight = true;
+  public double xComp;
+  public double yComp;
+/** TODO  public boolean useSpecial; */
   
   // Image
   private static BufferedImage img;
@@ -34,57 +36,45 @@ public abstract class Tank extends Sprite {
   // Initialization variable
   private static final int INIT_VEL_X = 0;
   private static final int INIT_VEL_Y = 0;
+  private static final int INIT_HP = 100;
   private static final int SIZE = 20;
 
   /** Constructor */
   public Tank(Color color, int init_x, int maxX, int maxY) {
-    super(INIT_VEL_X, INIT_VEL_Y, init_x, -SIZE, 
+    super(INIT_VEL_X, INIT_VEL_Y, init_x, -SIZE/2, 
           SIZE, SIZE, maxX, maxY);
     this.color = color;
-    life = 1000;
     hasShot = false;
-    aim = 0;
-    aimFaceX = SIZE;
-    aimOrigin = 0;
-    aimAngle = 45;
+    life = INIT_HP;
     power = 0;
+    aimAngle = 45;
+    xComp = Math.sin(aimAngle * Math.PI / 180);
+    yComp = Math.cos(aimAngle * Math.PI / 180);
   }
   
-  public void faceLeft() {
-    faceRight = false;
-    aimFaceX = -SIZE;
-    aimOrigin = 180;
-    aimAngle = -Math.abs(aimAngle);
-  }
-  
-  public void faceRight() {
-    faceRight = true;
-    aimFaceX = SIZE-7;
-    aimOrigin = 0;
-    aimAngle = Math.abs(aimAngle);
-  }
-  
-  public int aimUp() {
-    return aimAngle += aim;
-  }
-  
-  public int aimDown() {
-    return aimAngle -= aim;
+  public void updateAngle() {
+    xComp = Math.sin(aimAngle * Math.PI / 180);
+    yComp = Math.cos(aimAngle * Math.PI / 180);
   }
   
   public Bomb shoot(int maxX, int maxY) {
     hasShot = true;
-    Bomb b = new Bomb(1, -2,
-        posX, posY, maxX, maxY, this);
-    if (faceRight) { 
-      b.velX *= power;
-      b.velY *= power;
+    
+    double vY = yComp * power;
+    double vX = xComp * power;
+
+    Bomb b = new Bomb((int) vX, -(int) vY,
+        posX, posY, maxX, maxY);
+    
+    if (faceRight) {
+      b.velX = Math.abs(b.velX);
       b.posX += (SIZE + SIZE/4);
-    } else { 
-      b.velX *= -power;
-      b.velY *= power;
+    } else {
+      b.velX = -Math.abs(b.velX);
       b.posX -= SIZE;
       }
+    
+    
     return b;
   }
   
@@ -92,6 +82,7 @@ public abstract class Tank extends Sprite {
     if (this.intersects(bomb)) {
       /** Adjust damage according to direct hit */
       life -= bomb.damage;
+      System.out.println("hit!");
     }
   }
     
@@ -102,31 +93,40 @@ public abstract class Tank extends Sprite {
       // Tank
       g.setColor(color);
       g.fillOval(posX, posY, width, height);
-      
-  
-      // Front end
-      if (faceRight)
-        g.drawArc(posX + aimFaceX, posY-SIZE/2, 25, 25, aimOrigin, 50);
-      else
-        g.drawArc(posX + aimFaceX, posY-SIZE/2, 25, 25, aimOrigin, -50);
-      
+
       // Display life
-      g.drawString(Integer.toString(life), posX, posY);
+      g.drawString(Integer.toString(life), 
+                  posX-10, posY-5);
+      
+      g.setColor(Color.MAGENTA);
+      if (faceRight) {        
+        g.fillOval( 
+            (int)((posX+SIZE/2)+(25*xComp)), 
+            (int)((posY+SIZE/2)-(25*yComp)), 7, 7);
+      } else {
+        g.fillOval( 
+            (int)((posX+SIZE/2)-(25*xComp)), 
+            (int)((posY+SIZE/2)-(25*yComp)), 7, 7);
+      }
+      g.setColor(color);
+      
+      // Aimer
+      
       
       // Turn Status
       if (isTurn) {
         g.setColor(Color.YELLOW);
-        g.fillOval(posX, posY, 10, 10);
+        g.fillOval(posX+5, posY+5, 10, 10);
         g.setColor(color);
       } 
     } else {
-      g.setColor(color.GRAY);
+      g.setColor(Color.GRAY);
       g.drawString("x_x", posX, posY);
       g.fillOval(posX, posY, width, height);
     }
     
     
-    /** STUB -- ADD IMAGES
+    /** TODO -- ADD IMAGES
     try {
       if (img == null) {
         img = ImageIO.read(new File(img_file));

@@ -19,11 +19,11 @@ public class GameField extends JPanel {
   //private Turn currentTurn;
   
   /** Players */
-  private TankPlayer p1; // Player 1
-  private TankPlayer p2; // Player 2
-  private TankPlayer p3; // Player 3
-  private TankPlayer p4; // Player 4
-  public TankPlayer currentPlayer; // Aliased current player
+  private Tank p1; // Player 1
+  private Tank p2; // Player 2
+  private Tank p3; // Player 3
+  private Tank p4; // Player 4
+  public Tank currentPlayer; // Aliased current player
   private Bomb bomb;
   private Slider powerBar;
   public int timeCount; // Turn timer's value
@@ -34,20 +34,19 @@ public class GameField extends JPanel {
   public boolean playing = false;
   private JLabel turnTimer;
   private JLabel playerStatus;
-  private JSlider powerbar;
   
   /** Game constants */
   public static final int FIELD_HEIGHT = 500;
-  public static final int FIELD_WIDTH = 1000;
-  public static final int TANK_VELOCITY = 2;
+  public static final int FIELD_WIDTH = 500;
+  public static final int TANK_VELOCITY = 1;
   public static final double GRAVITY = 0.5;
   public static final int ONE_SECOND = 1000; // milliseconds
   
-  public static final int TURN_INTERVAL = 6; // seconds
+  public static final int TURN_INTERVAL = 60; // seconds
   public static final int INTERVAL = 20; // Timer interval in milliseconds
   
   /** Constructor */
-  public GameField(JLabel turnTimer, JLabel playerStatus, JSlider powerbar) {
+  public GameField(JLabel turnTimer, JLabel playerStatus) {
     
     // Create border
     setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -69,17 +68,17 @@ public class GameField extends JPanel {
       public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
           currentPlayer.velX = -TANK_VELOCITY;
-          currentPlayer.faceLeft();
+          currentPlayer.faceRight = false;
         } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
           currentPlayer.velX = TANK_VELOCITY;
-          currentPlayer.faceRight();
+          currentPlayer.faceRight = true;
         } else if (e.getKeyCode() == KeyEvent.VK_UP) {
-          currentPlayer.aim = currentPlayer.aimUp();
+          currentPlayer.aimAngle-=3;
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-          currentPlayer.aim = currentPlayer.aimDown();
+          currentPlayer.aimAngle+=3;
         } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
           if (!currentPlayer.hasShot) {
-            currentPlayer.power++;
+            currentPlayer.power+=2;
           }
         }
       }
@@ -89,15 +88,14 @@ public class GameField extends JPanel {
         else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
           currentPlayer.velX = 0;
         else if (e.getKeyCode() == KeyEvent.VK_SPACE)
-          if (!currentPlayer.hasShot) {
+          //if (!currentPlayer.hasShot) {
             bomb = currentPlayer.shoot(FIELD_WIDTH, FIELD_HEIGHT);
-          }
+          //}
       }
     });
     
     this.turnTimer = turnTimer;
     this.playerStatus = playerStatus;
-    this.powerbar = powerbar;
   }
   
   /**
@@ -105,13 +103,13 @@ public class GameField extends JPanel {
    */
   public void reset() {    
     // Create players
-    p1 = new TankPlayer(Color.BLUE,  (int) (Math.random() * 1000), 
+    p1 = new Tank(Color.BLUE,  (int) (Math.random() * FIELD_WIDTH), 
         FIELD_WIDTH, FIELD_HEIGHT);
-    p2 = new TankPlayer(Color.RED,  (int) (Math.random() * 1000), 
+    p2 = new Tank(Color.RED,  (int) (Math.random() * FIELD_WIDTH), 
         FIELD_WIDTH, FIELD_HEIGHT);
-    p3 = new TankPlayer(Color.GREEN,(int) (Math.random() * 1000), 
+    p3 = new Tank(Color.GREEN,(int) (Math.random() * FIELD_WIDTH), 
         FIELD_WIDTH, FIELD_HEIGHT);
-    p4 = new TankPlayer(Color.BLACK, (int) (Math.random() * 1000), 
+    p4 = new Tank(Color.BLACK, (int) (Math.random() * FIELD_WIDTH), 
         FIELD_WIDTH, FIELD_HEIGHT);
     
     powerBar = new Slider(0, FIELD_WIDTH, FIELD_HEIGHT);
@@ -193,8 +191,11 @@ public class GameField extends JPanel {
   public void pause() {
     if (timer.isRunning()) {
       timer.stop();
-    } else
+    } else {
       timer.start();
+    }
+   // Set component's focus on keyboard
+      requestFocusInWindow();
   }
 
   /** TODO - implement endturn() AFTER bomb hits */
@@ -239,6 +240,9 @@ public class GameField extends JPanel {
     else pTurn = 1;
     
     timeCount = TURN_INTERVAL;
+    
+   // Set component's focus on keyboard
+    requestFocusInWindow();
   }
   
   /** Called each time timer triggers */
@@ -247,11 +251,11 @@ public class GameField extends JPanel {
     if (playing) {
       
       // update powerbar position
-      powerbar.setValue(currentPlayer.power);
       powerBar.power = currentPlayer.power;
       
       // Update player position
       currentPlayer.move();
+      currentPlayer.updateAngle();
       currentPlayer.velY = (int) Math.round(currentPlayer.velY + GRAVITY);
       /** TODO - update all player positions for bunge */
       
