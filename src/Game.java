@@ -21,7 +21,7 @@ public class Game implements Runnable {
 	  final GameField field;
 	  
 		// Top-level frame
-		final JFrame frame = new JFrame("" + "tanks");
+		final JFrame frame = new JFrame("tanks");
 		
 	// Status panel variables
     final JPanel status_panel = new JPanel();
