@@ -18,18 +18,15 @@ public class Slider extends Sprite {
   private int sliderSpeed;
       
   public Slider(int power, int maxX, int maxY) {
-    super(VX, VY, posX, posY, maxX, 30, maxX, maxY);
+    super(VX, VY, posX, posY, maxX, 10, maxX, maxY);
     this.power = power;
     sliderSpeed = maxX / 30;
   }
   
   @Override
   public void draw(Graphics g) {
-    g.setColor(Color.BLACK);
-    g.drawRect(posX, posY, maxX, 40);
-   
     g.setColor(Color.RED);
-    g.fillRect(posX, posY, power * sliderSpeed, 40);
+    g.fillRect(posX, posY, power * sliderSpeed, 10);
   }
   
 }

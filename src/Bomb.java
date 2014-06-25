@@ -8,16 +8,18 @@ import java.awt.Graphics;
 
 public class Bomb extends Sprite {
   
-  public int damage = (int) (Math.random() * 25) + 10;
+  public int damage = (int) (Math.random() * 10) + 3;
   public int bombRadius = 5;
   public int damageRadius = 20;
-  private static final int WIDTH = 7;
-  private static final int HEIGHT = 7;
+  private static final int WIDTH = 15;
+  private static final int HEIGHT = 15;
+  public Tank shooter;
   
   /** Constructor */
   public Bomb(int vx, int vy, int px, int py, 
-      int maxX, int maxY) {
+      int maxX, int maxY, Tank shooter) {
     super(vx, vy, px, py, WIDTH, HEIGHT, maxX, maxY);
+    this.shooter = shooter;
   }
   
   @Override
@@ -28,7 +30,7 @@ public class Bomb extends Sprite {
  
   @Override
   public void draw(Graphics g) {
-    g.setColor(Color.RED);
+    g.setColor(Color.CYAN);
     g.fillOval(posX, posY, WIDTH, HEIGHT);
   }
 
